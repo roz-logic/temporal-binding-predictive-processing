@@ -1,5 +1,5 @@
 # Temporal Binding & Predictive Processing
-### Interactive Analysis Reference — MSc Thesis
+### Interactive Analysis Reference — MA Thesis
 
 > **Live app:** https://roz-logic.github.io/temporal-binding-predictive-processing/
 
