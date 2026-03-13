@@ -647,7 +647,7 @@ afex_mvp2
     winningModel: "log_RATIO ~ test_time + (1 + acq_time + test_time | participant)",
     snippets: [
       {
-        "Forward selection (log_RATIO)",
+        title: "Forward selection (log_RATIO)",
         code: `# ── Forward selection on log_RATIO ───────────────────────────────────────────────
 mb0 <- lmer(log_RATIO ~ 1 +
               (1 + acq_time + test_time | participant),

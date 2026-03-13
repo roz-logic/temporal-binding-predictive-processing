@@ -13,7 +13,7 @@ export default defineConfig(() => {
   const isGHPages = process.env.DEPLOY_TARGET === "ghpages";
 
   return {
-    base: isGHPages ? "/temporal-binding-predictive-processing/" : "/",
+    base: "/temporal-binding-predictive-processing/",
     plugins: [
       react(),
       tailwindcss(),
