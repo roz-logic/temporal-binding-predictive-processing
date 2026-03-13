@@ -480,8 +480,8 @@ ggsave(here("figures", "exp2_CP_RATIO.png"), p_cp, width = 8, height = 6, dpi = 
 # --- mvsp plot (RATIO × validity) --------------------------------------------
 dat_mvsp$block_label <- paste(dat_mvsp$cond.type, "|", dat_mvsp$acq.time)
 mvsp_summary <- summarise_dv(dat_mvsp,
-                              c("block_label", "cond.type", "acq.time", "is_valid"),
-                              "RATIO")
+                             c("block_label", "cond.type", "acq.time", "is_valid"),
+                             "RATIO")
 
 p_mvsp <- ggplot(mvsp_summary,
                  aes(x = block_label, y = mean_dv, fill = is_valid,

@@ -14,13 +14,13 @@ const navItems = [
     id: "lmm3-wrangling",
     label: "Wrangling & Setup",
     icon: "🔧",
-    sub: "log_RATIO · RT in code · SK",
+    sub: "log_RATIO (mc/cp/tc) · RATIO (mvp/val) · RT in code · SK",
   },
   {
     id: "mc3",
     label: "IC vs. TC — log(RATIO)",
     icon: "🟣",
-    sub: "Analysis 1 · 2×2",
+    sub: "Analysis 1 · 2×2 · log_RATIO",
     badge: "RATIO",
     badgeColor: "bg-violet-500/20 text-violet-300",
   },
@@ -28,15 +28,15 @@ const navItems = [
     id: "cp3",
     label: "TC vs. IP — log(RATIO)",
     icon: "🔵",
-    sub: "Analysis 2 · 2×2",
+    sub: "Analysis 2 · 2×2 · log_RATIO",
     badge: "RATIO",
     badgeColor: "bg-sky-500/20 text-sky-300",
   },
   {
     id: "mvp3",
-    label: "IC vs. IP — log(RATIO)",
+    label: "IC vs. IP — RATIO",
     icon: "🟢",
-    sub: "Analysis 3 · 2×2×2",
+    sub: "Analysis 3 · 2×2×2 · RATIO",
     badge: "RATIO",
     badgeColor: "bg-emerald-500/20 text-emerald-300",
   },
@@ -112,7 +112,8 @@ export function Lmm3Sidebar({ active, onNavigate }: Props) {
       {/* Key finding card */}
       <div className="mt-4 rounded-xl border border-rose-500/20 bg-rose-500/5 p-3 space-y-1.5 text-xs text-slate-500">
         <p className="text-rose-400 font-semibold">Exp 3 key findings</p>
-        <p>• log_RATIO used for ALL analyses</p>
+        <p>• log_RATIO: mc3, cp3, tc3 (cross-exp + TC)</p>
+        <p>• RATIO: mvp3, val3 (within Exp 3a IC/IP)</p>
         <p>• is_valid not sig in RATIO</p>
         <p>• cond × is_valid SIG in RT ✅</p>
         <p>• Three-way SIG in RT ✅</p>

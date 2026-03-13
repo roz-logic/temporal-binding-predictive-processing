@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Experiment 2 — LMM Analysis Reference Data
 // n = 41 participants (one excluded from n=42 original)
-// DV1: RATIO (reproduced_duration / target_duration)  — all 4 analyses
+// DV1: RATIO — analyses 1/2/3 (mc/cp/mvsp) · log_RATIO — analysis 4 (TC; same as Exp 1 TC)
 // DV2: log(space_RT) in ms                            — RT analyses (IC + IP only)
 // Fixed IEI: 650 ms | Random IEI: 150–1150 ms (changed from 0–1100 ms in Exp 1)
 // Test congruency: 50/50 (Exp 2) → 80/20 (Exp 3, same script)
@@ -620,7 +620,7 @@ afex_mvp2
     color: "amber",
     badge: "RATIO Analysis 4",
     description:
-      "Examines whether acquisition timing (fixed/random) and test timing (fixed/random) affect temporal reproduction in TC blocks. Raw RATIO residuals are non-normal — log_RATIO is used for the backward selection and afex confirmation. Key result: only test_time is significant; interaction NOT significant in Exp 2.",
+      "Examines whether acquisition timing (fixed/random) and test timing (fixed/random) affect temporal reproduction in TC blocks. DV is log_RATIO throughout — raw RATIO residuals are non-normal (per thesis: 'log-transformed ratio variable'). Key result: only test_time is significant; interaction NOT significant in Exp 2.",
     design: "2 × 2 (Acquisition Timing × Test Timing)",
     dv: "log_RATIO = log(space_pressed_duration / wait_duration_before_circle)",
     predictors: ["acq_time (fixed vs. random)", "test_time (fixed vs. random)"],
@@ -647,8 +647,8 @@ afex_mvp2
     winningModel: "log_RATIO ~ test_time + (1 + acq_time + test_time | participant)",
     snippets: [
       {
-        title: "Forward selection (log_RATIO)",
-        code: `# ── Forward selection on log_RATIO ───────────────────────────────────────────────
+        label: "Forward selection (log_RATIO)",
+        code: `# ── Forward selection on log_RATIO ──────────────────────────────────────────
 mb0 <- lmer(log_RATIO ~ 1 +
               (1 + acq_time + test_time | participant),
             data = TC, REML = FALSE, na.action = na.exclude)
@@ -683,10 +683,10 @@ anova(rb2, rb3, refit = FALSE)   # test_time slope needed ✅
 
 tc2_final <- rb3
 summary(tc2_final)$coef`,
-        note: "RATIO residuals in TC blocks are non-normal — use log_RATIO for backward selection and afex confirmation.",
+        note: "log_RATIO used throughout TC analysis. Per thesis Exp 2b: 'log-transformed ratio variable'. Raw RATIO residuals violate normality.",
       },
       {
-        label: "Backward selection (log_RATIO)",
+        label: "Backward selection (cross-check)",
         code: `# ── Backward selection on log_RATIO ──────────────────────────────────────────
 full_tc2 <- lmer(log_RATIO ~ test_time + acq_time + acq_time:test_time +
                    (1 + acq_time + test_time | participant),
@@ -744,7 +744,7 @@ anova(tc2_cond, tc2_cond_rs, refit = FALSE)    # random slope needed ✅`,
     ],
     notes: [
       "Key difference from Exp 1: the acq_time × test_time interaction is NOT significant in Exp 2.",
-      "log_RATIO used for backward selection and afex because RATIO residuals in TC blocks are non-normal.",
+      "log_RATIO is the DV throughout TC analysis in Exp 2 — raw RATIO residuals violate normality. Thesis Exp 2b: 'log-transformed ratio variable'.",
       "TC blocks have no is_valid column — never include is_valid in this analysis.",
       "With n = 41 and 221 missing values in TC, na.action = na.exclude is essential.",
     ],

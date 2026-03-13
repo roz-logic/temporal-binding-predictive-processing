@@ -1,12 +1,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Experiment 3 — LMM Analysis Reference Data
 // n = 41 participants (1 participant [SK] has 6 missing trials from the start)
-// DV1: log_RATIO = log(reproduced / target)   — 5 RATIO analyses
-// DV2: log_space_RT                            — RT analysis (IC + IP only)
+// DV1: RATIO = space_pressed_duration / wait_duration_before_circle — analyses mvp3 / val3 (within-Exp 3a)
+//       log_RATIO = log(RATIO) — analyses mc3 / cp3 (cross-exp 3a vs 3b) and tc3 (Exp 3b); same pattern as Exp 2 TC
+// DV2: log_space_RT                                                      — RT analysis (IC + IP only)
 // Fixed IEI: 650 ms | Random IEI: 150–1150 ms (same as Exp 2; changed from 0–1100 ms in Exp 1)
 // Test congruency: 80/20 (Exp 3) vs. 50/50 (Exp 2)
 // NEW vs Exp 2: 5th RATIO analysis (validity split); cond×is_valid sig in RT
-//              RT exclusion done in code (not Excel); log_RATIO used throughout
+//              RT exclusion done in code (not Excel)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface CodeSnippet3 {
@@ -50,7 +51,7 @@ export const wrangling3RatioCode = `# ══════════════
 # Experiment 3 — RATIO analysis wrangling (n = 41)
 # KEY DIFFERENCES FROM EXP 2:
 #   1. RT exclusion is done IN CODE (not in Excel)
-#   2. log_RATIO used throughout (RATIO residuals violated normality)
+#   2. log_RATIO for cross-exp analyses (mc3/cp3) and TC; RATIO for within-3a (mvp3/val3)
 #   3. 5 RATIO analyses instead of 4 (validity split added)
 #   4. SK participant has 6 missing trials from 2-Control-FR from the start
 #   5. Test congruency: 80/20 (my_random > 0.8) vs 50/50 in Exp 2
@@ -93,7 +94,7 @@ exp3_clean <- exp3_clean |>
     cond_type = case_when(
       condition %in% c("1-Motor-FF", "4-Motor-RF")            ~ "IC",
       condition %in% c("0-Control-RR", "2-Control-FR",
-                       "5-Control-RF", "7-Control-FF")        ~ "TC",
+                       "5-Control-RF", "7-Control- FF")        ~ "TC",
       condition %in% c("3-Prediction-FF", "6-Prediction-RF")  ~ "IP"
     ),
     acq_time  = ifelse(
@@ -112,17 +113,19 @@ exp3_clean <- exp3_clean |>
 exp3_clean <- exp3_clean |>
   mutate(
     RATIO     = space_pressed_duration / wait_duration_before_circle,
-    log_RATIO = log(RATIO),   # PRIMARY DV for all RATIO analyses in Exp 3
+    log_RATIO = log(RATIO),   # DV for mc3, cp3, tc3 — cross-exp analyses and TC blocks
     RRE       = (space_pressed_duration - wait_duration_before_circle) /
                   wait_duration_before_circle,
     AV_und    = (wait_duration_before_circle - space_pressed_duration) /
                   wait_duration_before_circle
   )
 
-# NOTE: RRE and other measures violate normality assumptions badly.
-# log_RATIO passes assumption checks and is used throughout Exp 3.
-# Exp 2 used raw RATIO for IC/IP analyses but log_RATIO for TC.
-# Exp 3 uses log_RATIO for ALL analyses for consistency.
+# NOTE: DV varies by analysis in Exp 3 — same structure as Exp 2:
+#   RATIO     : mvp3 (Exp 3a IC vs IP) and val3 (validity split from 3a data)
+#   log_RATIO : mc3 / cp3 (cross-exp 3a vs 3b) and tc3 (Exp 3b TC blocks)
+# The cross-experiment analyses (3a vs 3b) use log_RATIO because the Exp 3b
+# (TC) data require it, and a consistent DV was used across the comparison.
+# Exp 2 used the identical pattern: RATIO for within-2a, log_RATIO for TC.
 
 # Missing after cleaning (space_pressed_duration exclusions): 747
 rows_with_missing <- exp3_clean[is.na(exp3_clean$space_pressed_duration), ]
@@ -130,11 +133,11 @@ rows_with_missing <- exp3_clean[is.na(exp3_clean$space_pressed_duration), ]
 # ── 6. Analysis subsets ───────────────────────────────────────────────────────
 MC   <- exp3_clean |>
   filter(condition %in% c("1-Motor-FF","4-Motor-RF",
-                           "7-Control-FF","5-Control-RF"))
+                           "7-Control- FF","5-Control-RF"))
 
 CP   <- exp3_clean |>
   filter(condition %in% c("3-Prediction-FF","6-Prediction-RF",
-                           "7-Control-FF","5-Control-RF"))
+                           "7-Control- FF","5-Control-RF"))
 
 MvP  <- exp3_clean |>
   filter(cond_type %in% c("IC","IP"))
@@ -174,7 +177,7 @@ export const wrangling3RTCode = `# ═══════════════
 exp3_RT <- exp3_dat |>
   select(-RATIO, -ABS.ERROR, -Avg.underest..percentage.) |>
   filter(!condition %in% c("0-Control-RR","2-Control-FR",
-                            "5-Control-RF","7-Control-FF")) |>
+                            "5-Control-RF","7-Control- FF")) |>
   mutate(across(c(wait_duration_before_circle, space_pressed_duration,
                   space_RT, DIFFERENCE), ~ s_to_ms(as.numeric(.)))) |>
   mutate(space_RT = rt_excluded(space_RT)) |>
@@ -214,7 +217,7 @@ export const analyses3: AnalysisBlock3[] = [
     color: "violet",
     badge: "RATIO Analysis 1",
     description:
-      "Compares Identity Control (IC) against Temporal Control (TC) blocks. log_RATIO is used throughout Exp 3 — RATIO residuals fail normality. Key result mirrors Exp 2: cond_type × acq_time interaction significant; acq_time main effect not significant.",
+      "Cross-experiment comparison: Exp 3a IC blocks vs. Exp 3b TC blocks. log_RATIO is used because the TC (3b) data required a log-transform — same reason as Exp 2 TC. Key result mirrors Exp 2: cond_type × acq_time interaction significant; acq_time main effect not significant.",
     design: "2 × 2 (Condition Type × Acquisition Timing)",
     dv: "log_RATIO = log(space_pressed_duration / wait_duration_before_circle)",
     predictors: ["cond_type (IC vs. TC)", "acq_time (fixed vs. random)"],
@@ -282,7 +285,7 @@ anova(r2_mc3, r3_mc3, refit = FALSE)   # acq_time  slope needed ✅
 
 mc3_final <- r3_mc3
 summary(mc3_final)$coef`,
-        note: "log_RATIO is the DV throughout Exp 3 — RATIO residuals were non-normal. bobyqa optimizer sometimes needed for the interaction model.",
+        note: "RATIO is the DV for MC (same as Exp 2 IC/TC analysis). bobyqa optimizer sometimes needed for the interaction model.",
       },
       {
         label: "Outlier trim & robustness",
@@ -329,8 +332,8 @@ plot(fitted(mc3_final), resid(mc3_final))`,
       },
     ],
     notes: [
-      "log_RATIO replaces raw RATIO as DV in Exp 3. RATIO and other measures (RRE, AV_und) all violated normality; log_RATIO passed.",
-      "Pattern mirrors Exp 2: cond_type × acq_time significant; acq_time main effect not significant as standalone predictor.",
+      "log_RATIO is the DV for mc3 — cross-experiment analysis (Exp 3a IC vs Exp 3b TC). TC data required log-transform, consistent DV used. Same as Exp 2 MC analysis pattern.",
+      "Pattern mirrors Exp 2: cond_type × acq_time significant; acq_time main effect not significant as standalone predictor. Note: Exp 2 MC also uses RATIO — the log-transform here is driven by combining Exp 3a and 3b data.",
       "Trimming uses fixed-effects model residuals (m3_mc3) not the final random-effects model, to avoid circularity.",
       "bobyqa optimizer may be needed — check with all_fit(model) if convergence fails.",
     ],
@@ -344,9 +347,9 @@ plot(fitted(mc3_final), resid(mc3_final))`,
     color: "sky",
     badge: "RATIO Analysis 2",
     description:
-      "Tests whether learned tone-colour prediction (IP) shifts temporal binding relative to TC. log_RATIO DV. Key finding consistent with Exp 2: cond_type × acq_time interaction significant; acq_time becomes significant main effect.",
+      "Cross-experiment comparison: Exp 3b TC blocks vs. Exp 3a IP blocks. log_RATIO DV because TC (3b) data required log-transform. Key finding consistent with Exp 2: cond_type × acq_time interaction significant; acq_time becomes significant main effect.",
     design: "2 × 2 (Condition Type × Acquisition Timing)",
-    dv: "log_RATIO",
+    dv: "log_RATIO = log(space_pressed_duration / wait_duration_before_circle)",
     predictors: ["cond_type (IP vs. TC)", "acq_time (fixed vs. random)"],
     randomStructure: "(1 + cond_type + acq_time | participant)",
     contrastCoding: "Sum contrasts",
@@ -457,14 +460,14 @@ afex_cp3_simple`,
   // ── RATIO Analysis 3: IC vs. IP ──────────────────────────────────────────
   {
     id: "mvp3",
-    title: "IC vs. IP — log(RATIO)",
+    title: "IC vs. IP — RATIO",
     subtitle: "Identity Control vs. Identity Prediction · 2 × 2 × 2",
     color: "emerald",
     badge: "RATIO Analysis 3",
     description:
-      "Tests whether voluntary action (IC) vs. passive tone-prediction (IP) differs in temporal binding. 2×2×2 design: cond_type × acq_time × is_valid. Key Exp 3 result: cond_type × acq_time interaction significant; is_valid still not significant as main effect or in interactions.",
+      "Tests whether voluntary action (IC) vs. passive tone-prediction (IP) differs in temporal binding. RATIO DV (same as Exp 2). 2×2×2 design: cond_type × acq_time × is_valid. Key Exp 3 result: cond_type × acq_time interaction significant; is_valid still not significant as main effect or in interactions.",
     design: "2 × 2 × 2 (Condition Type × Acquisition Timing × Trial Validity)",
-    dv: "log_RATIO",
+    dv: "RATIO = space_pressed_duration / wait_duration_before_circle",
     predictors: ["cond_type (IC vs. IP)", "acq_time (fixed vs. random)", "is_valid (TRUE/FALSE)"],
     randomStructure: "(1 + cond_type + acq_time | participant)",
     contrastCoding: "Sum contrasts",
@@ -490,23 +493,23 @@ afex_cp3_simple`,
         ],
       },
     ],
-    winningModel: "log_RATIO ~ cond_type * acq_time + (1 + cond_type + acq_time | participant)",
+    winningModel: "RATIO ~ cond_type * acq_time + (1 + cond_type + acq_time | participant)",
     snippets: [
       {
         label: "Forward selection",
-        code: `ma0 <- lmer(log_RATIO ~ 1 +
+        code: `ma0 <- lmer(RATIO ~ 1 +
               (1 + cond_type + acq_time | participant),
             data = MvP, REML = FALSE, na.action = na.exclude)
 
-ma1 <- lmer(log_RATIO ~ cond_type +
+ma1 <- lmer(RATIO ~ cond_type +
               (1 + cond_type + acq_time | participant),
             data = MvP, REML = FALSE, na.action = na.exclude)
 
-ma2 <- lmer(log_RATIO ~ cond_type + acq_time +
+ma2 <- lmer(RATIO ~ cond_type + acq_time +
               (1 + cond_type + acq_time | participant),
             data = MvP, REML = FALSE, na.action = na.exclude)
 
-ma3 <- lmer(log_RATIO ~ cond_type * acq_time +
+ma3 <- lmer(RATIO ~ cond_type * acq_time +
               (1 + cond_type + acq_time | participant),
             data = MvP, REML = FALSE, na.action = na.exclude)
 
@@ -515,19 +518,19 @@ anova(ma1, ma2)   # acq_time  NOT sig (standalone) — proceed to interaction
 anova(ma1, ma3)   # cond_type × acq_time sig ✅
 
 # Add is_valid
-ma4 <- lmer(log_RATIO ~ cond_type * acq_time + is_valid +
+ma4 <- lmer(RATIO ~ cond_type * acq_time + is_valid +
               (1 + cond_type + acq_time | participant),
             data = MvP, REML = FALSE, na.action = na.exclude)
 anova(ma3, ma4)   # is_valid NOT sig ❌
 
 # Two-way interactions with is_valid
-ma6 <- lmer(log_RATIO ~ cond_type * is_valid +
+ma6 <- lmer(RATIO ~ cond_type * is_valid +
               (1 + cond_type + acq_time | participant),
             data = MvP, REML = FALSE, na.action = na.exclude)
-ma8 <- lmer(log_RATIO ~ acq_time * is_valid +
+ma8 <- lmer(RATIO ~ acq_time * is_valid +
               (1 + cond_type + acq_time | participant),
             data = MvP, REML = FALSE, na.action = na.exclude)
-ma10 <- lmer(log_RATIO ~ cond_type * acq_time * is_valid +
+ma10 <- lmer(RATIO ~ cond_type * acq_time * is_valid +
                (1 + cond_type + acq_time | participant),
              data = MvP, REML = FALSE, na.action = na.exclude)
 
@@ -536,23 +539,23 @@ anova(ma1, ma8)    # acq_time  × is_valid NOT sig ❌
 anova(ma1, ma10)   # three-way NOT sig ❌
 
 # → Winning fixed structure: cond_type * acq_time`,
-        note: "is_valid consistently non-significant in RATIO analysis even with 80/20 split. Validity effects show up in RT (Exp 3) not RATIO.",
+        note: "is_valid consistently non-significant in RATIO analysis even with 80/20 split. Validity effects show up in RT (Exp 3) not RATIO. RATIO is the DV here — same as Exp 2 mvsp.",
       },
       {
         label: "Random-effects selection",
-        code: `ra1 <- lmer(log_RATIO ~ cond_type * acq_time +
+        code: `ra1 <- lmer(RATIO ~ cond_type * acq_time +
               (1 | participant),
             data = MvP, REML = TRUE, na.action = na.exclude)
 
-ra2 <- lmer(log_RATIO ~ cond_type * acq_time +
+ra2 <- lmer(RATIO ~ cond_type * acq_time +
               (1 + cond_type | participant),
             data = MvP, REML = TRUE, na.action = na.exclude)
 
-ra3 <- lmer(log_RATIO ~ cond_type * acq_time +
+ra3 <- lmer(RATIO ~ cond_type * acq_time +
               (1 + cond_type + acq_time | participant),
             data = MvP, REML = TRUE, na.action = na.exclude)
 
-ra4 <- lmer(log_RATIO ~ cond_type * acq_time +
+ra4 <- lmer(RATIO ~ cond_type * acq_time +
               (1 + cond_type + acq_time + is_valid | participant),
             data = MvP, REML = TRUE, na.action = na.exclude)
 # ⚠️ Singular — is_valid slope excluded
@@ -567,7 +570,7 @@ summary(mvp3_final)$coef
 # Outlier robustness check
 MvP_trimmed <- trim_by_resid(MvP, ma3)   # use fixed-effects model
 
-mvp3_trimmed <- lmer(log_RATIO ~ cond_type * acq_time +
+mvp3_trimmed <- lmer(RATIO ~ cond_type * acq_time +
                        (1 + cond_type + acq_time | participant),
                      data = MvP_trimmed, REML = TRUE, na.action = na.exclude)
 summary(mvp3_trimmed)$coef`,
@@ -576,7 +579,7 @@ summary(mvp3_trimmed)$coef`,
         label: "afex confirmation",
         code: `# Simple random structure
 afex_mvp3_simple <- mixed(
-  log_RATIO ~ cond_type * acq_time * is_valid + (1 | participant),
+  RATIO ~ cond_type * acq_time * is_valid + (1 | participant),
   data      = MvP,
   method    = "LRT",
   na.action = na.exclude
@@ -585,7 +588,7 @@ afex_mvp3_simple
 
 # Complex random structure (trimmed data)
 afex_mvp3_complex <- mixed(
-  log_RATIO ~ cond_type * acq_time * is_valid +
+  RATIO ~ cond_type * acq_time * is_valid +
     (1 + cond_type + acq_time | participant),
   data      = MvP_trimmed,
   method    = "LRT",
@@ -609,7 +612,7 @@ plot(fitted(mvp3_final), resid(mvp3_final))`,
     notes: [
       "is_valid not significant in log_RATIO analysis — validity effects are captured better by RT in Exp 3.",
       "is_valid random slope causes singularity — consistent with Exp 1 and Exp 2.",
-      "Winning model same as Exp 2 IC vs. IP despite 80/20 split — the temporal reproduction DV is less sensitive to validity than RT.",
+      "Winning model same as Exp 2 IC vs. IP. RATIO DV same as Exp 2 — the temporal reproduction DV is less sensitive to validity than RT.",
       "cond_type × acq_time interaction is the theoretically key result: IC shows binding only when acquisition was fixed (predictable).",
     ],
   },
@@ -750,13 +753,13 @@ anova(tc3_cond1, tc3_cond2, refit = FALSE)   # random slope needed ✅
   {
     id: "val3",
     title: "IC vs. IP — Validity Analysis (NEW)",
-    subtitle: "log(RATIO) split by trial validity · 80/20 congruency manipulation",
+    subtitle: "RATIO split by trial validity · 80/20 congruency manipulation",
     color: "teal",
     badge: "RATIO Analysis 5 — NEW",
     description:
-      "NEW in Experiment 3. The 80/20 congruency split creates a meaningful validity manipulation worth examining directly. This analysis isolates valid vs. invalid trials within IC and IP conditions to ask whether the binding effect depends on trial-by-trial congruency. is_valid remains non-significant in RATIO — the validity effect is primarily captured in the RT analysis.",
+      "NEW in Experiment 3. The 80/20 congruency split creates a meaningful validity manipulation worth examining directly. RATIO DV (same as Exp 2 mvsp). is_valid remains non-significant in RATIO — the validity effect is primarily captured in the RT analysis.",
     design: "2 × 2 × 2 (Condition Type × Acquisition Timing × Trial Validity)",
-    dv: "log_RATIO",
+    dv: "RATIO = space_pressed_duration / wait_duration_before_circle",
     predictors: ["cond_type (IC vs. IP)", "acq_time", "is_valid (80% valid, 20% invalid)"],
     randomStructure: "(1 + cond_type + acq_time | participant)",
     contrastCoding: "Sum contrasts — 80/20 split means is_valid is NOT balanced; sum coding is particularly important here",
@@ -783,7 +786,7 @@ anova(tc3_cond1, tc3_cond2, refit = FALSE)   # random slope needed ✅
         ],
       },
     ],
-    winningModel: "log_RATIO ~ cond_type * acq_time + (1 + cond_type + acq_time | participant)",
+    winningModel: "RATIO ~ cond_type * acq_time + (1 + cond_type + acq_time | participant)",
     snippets: [
       {
         label: "Full validity analysis",
@@ -792,27 +795,27 @@ anova(tc3_cond1, tc3_cond2, refit = FALSE)   # random slope needed ✅
 # is_valid contrasts already set to sum coding
 
 # Forward selection with is_valid added explicitly
-ma_v1 <- lmer(log_RATIO ~ cond_type +
+ma_v1 <- lmer(RATIO ~ cond_type +
                 (1 + cond_type + acq_time | participant),
               data = MvP, REML = FALSE, na.action = na.exclude)
 
-ma_v2 <- lmer(log_RATIO ~ cond_type * acq_time +
+ma_v2 <- lmer(RATIO ~ cond_type * acq_time +
                 (1 + cond_type + acq_time | participant),
               data = MvP, REML = FALSE, na.action = na.exclude)
 
-ma_v3 <- lmer(log_RATIO ~ cond_type * acq_time + is_valid +
+ma_v3 <- lmer(RATIO ~ cond_type * acq_time + is_valid +
                 (1 + cond_type + acq_time | participant),
               data = MvP, REML = FALSE, na.action = na.exclude)
 
-ma_v4 <- lmer(log_RATIO ~ cond_type * is_valid +
+ma_v4 <- lmer(RATIO ~ cond_type * is_valid +
                 (1 + cond_type + acq_time | participant),
               data = MvP, REML = FALSE, na.action = na.exclude)
 
-ma_v5 <- lmer(log_RATIO ~ acq_time * is_valid +
+ma_v5 <- lmer(RATIO ~ acq_time * is_valid +
                 (1 + cond_type + acq_time | participant),
               data = MvP, REML = FALSE, na.action = na.exclude)
 
-ma_v6 <- lmer(log_RATIO ~ cond_type * acq_time * is_valid +
+ma_v6 <- lmer(RATIO ~ cond_type * acq_time * is_valid +
                 (1 + cond_type + acq_time | participant),
               data = MvP, REML = FALSE, na.action = na.exclude)
 
@@ -827,11 +830,11 @@ anova(ma_v1, ma_v6)   # three-way NOT sig ❌
       },
       {
         label: "Backward selection cross-check",
-        code: `full_val <- lmer(log_RATIO ~ cond_type * acq_time * is_valid +
+        code: `full_val <- lmer(RATIO ~ cond_type * acq_time * is_valid +
                    (1 + cond_type + acq_time | participant),
                  data = MvP, REML = FALSE, na.action = na.exclude)
 
-red_val1 <- lmer(log_RATIO ~ cond_type + acq_time + is_valid +
+red_val1 <- lmer(RATIO ~ cond_type + acq_time + is_valid +
                    cond_type:acq_time + cond_type:is_valid + acq_time:is_valid +
                    (1 + cond_type + acq_time | participant),
                  data = MvP, REML = FALSE, na.action = na.exclude)
@@ -848,7 +851,7 @@ anova(red_val1, red_val3)   # cond_type × is_valid NOT sig ❌  (RATIO)
 anova(red_val1, red_val4)   # cond_type × acq_time sig ✅
 
 # Main effects
-full_add <- lmer(log_RATIO ~ cond_type + acq_time + is_valid +
+full_add <- lmer(RATIO ~ cond_type + acq_time + is_valid +
                    (1 + cond_type + acq_time | participant),
                  data = MvP, REML = FALSE, na.action = na.exclude)
 
@@ -859,7 +862,7 @@ anova(full_add, update(full_add, . ~ . - is_valid))    # is_valid  NOT sig ❌`,
       {
         label: "afex confirmation",
         code: `afex_val_simple <- mixed(
-  log_RATIO ~ cond_type * acq_time * is_valid + (1 | participant),
+  RATIO ~ cond_type * acq_time * is_valid + (1 | participant),
   data      = MvP,
   method    = "LRT",
   na.action = na.exclude
@@ -867,7 +870,7 @@ anova(full_add, update(full_add, . ~ . - is_valid))    # is_valid  NOT sig ❌`,
 afex_val_simple
 
 afex_val_complex <- mixed(
-  log_RATIO ~ cond_type * acq_time * is_valid +
+  RATIO ~ cond_type * acq_time * is_valid +
     (1 + cond_type + acq_time | participant),
   data      = MvP,
   method    = "LRT",
@@ -1109,17 +1112,17 @@ export const conditionTable3 = [
   { id: "4-Motor-RF",      type: "IC", acq: "random", test: "fixed",  label: "IC-RF", block: 2 },
   { id: "3-Prediction-FF", type: "IP", acq: "fixed",  test: "fixed",  label: "IP-FF", block: 3 },
   { id: "6-Prediction-RF", type: "IP", acq: "random", test: "fixed",  label: "IP-RF", block: 4 },
-  { id: "7-Control-FF",    type: "TC", acq: "fixed",  test: "fixed",  label: "TC-FF", block: 5 },
+  { id: "7-Control- FF",    type: "TC", acq: "fixed",  test: "fixed",  label: "TC-FF", block: 5 },
   { id: "5-Control-RF",    type: "TC", acq: "random", test: "fixed",  label: "TC-RF", block: 6 },
   { id: "0-Control-RR",    type: "TC", acq: "random", test: "random", label: "TC-RR", block: 7 },
   { id: "2-Control-FR",    type: "TC", acq: "fixed",  test: "random", label: "TC-FR", block: 8 },
 ];
 
 export const analysisMatrix3 = [
-  { analysis: "IC vs. TC — log(RATIO)",        id: "mc3",  conditions: ["1-Motor-FF","4-Motor-RF","7-Control-FF","5-Control-RF"],     color: "violet" },
-  { analysis: "TC vs. IP — log(RATIO)",        id: "cp3",  conditions: ["3-Prediction-FF","6-Prediction-RF","7-Control-FF","5-Control-RF"], color: "sky" },
-  { analysis: "IC vs. IP — log(RATIO)",        id: "mvp3", conditions: ["1-Motor-FF","4-Motor-RF","3-Prediction-FF","6-Prediction-RF"], color: "emerald" },
-  { analysis: "TC — Temporal Control",         id: "tc3",  conditions: ["0-Control-RR","2-Control-FR","7-Control-FF","5-Control-RF"],  color: "amber" },
-  { analysis: "Validity Split — log(RATIO)",   id: "val3", conditions: ["1-Motor-FF","4-Motor-RF","3-Prediction-FF","6-Prediction-RF"], color: "teal" },
+  { analysis: "IC vs. TC — RATIO",              id: "mc3",  conditions: ["1-Motor-FF","4-Motor-RF","7-Control- FF","5-Control-RF"],     color: "violet" },
+  { analysis: "TC vs. IP — RATIO",              id: "cp3",  conditions: ["3-Prediction-FF","6-Prediction-RF","7-Control- FF","5-Control-RF"], color: "sky" },
+  { analysis: "IC vs. IP — RATIO",              id: "mvp3", conditions: ["1-Motor-FF","4-Motor-RF","3-Prediction-FF","6-Prediction-RF"], color: "emerald" },
+  { analysis: "TC — Temporal Control",         id: "tc3",  conditions: ["0-Control-RR","2-Control-FR","7-Control- FF","5-Control-RF"],  color: "amber" },
+  { analysis: "Validity Split — RATIO",         id: "val3", conditions: ["1-Motor-FF","4-Motor-RF","3-Prediction-FF","6-Prediction-RF"], color: "teal" },
   { analysis: "IC vs. IP — log(RT)",           id: "rt3",  conditions: ["1-Motor-FF","4-Motor-RF","3-Prediction-FF","6-Prediction-RF"], color: "rose" },
 ];

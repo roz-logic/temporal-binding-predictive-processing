@@ -22,7 +22,7 @@ export function Lmm3WranglingSection() {
       <div>
         <h2 className="text-xl font-bold text-white mb-1">Wrangling & Setup — Experiment 3</h2>
         <p className="text-slate-400 text-sm">
-          Data cleaning · RT exclusion (in code, not Excel) · SK missing trials · log_RATIO throughout
+          Data cleaning · RT exclusion (in code, not Excel) · SK missing trials · log_RATIO (mc/cp/tc) · RATIO (mvp/val)
         </p>
       </div>
 
@@ -36,8 +36,8 @@ export function Lmm3WranglingSection() {
           },
           {
             color: "amber",
-            title: "log_RATIO throughout",
-            body: "Exp 2 used raw RATIO for IC/IP and log_RATIO for TC. Exp 3 uses log_RATIO for ALL 5 RATIO analyses — RATIO residuals fail normality.",
+            title: "DV varies by analysis",
+            body: "log_RATIO for mc3, cp3, tc3 (cross-exp and TC blocks). RATIO for mvp3 and val3 (within-Exp 3a IC vs IP). Same logic as Exp 2: TC blocks need log-transform.",
           },
           {
             color: "teal",
@@ -102,7 +102,7 @@ export function Lmm3WranglingSection() {
             <tbody>
               {[
                 ["RT exclusion",        "Done in Excel pre-import",         "rt_excluded() in R"],
-                ["RATIO DV",            "RATIO for IC/IP, log_RATIO for TC", "log_RATIO for ALL"],
+                ["RATIO DV",            "RATIO for IC/IP, log_RATIO for TC", "log_RATIO for mc/cp/tc · RATIO for mvp/val"],
                 ["Test congruency",     "50/50 (my_random > 0.5)",          "80/20 (my_random > 0.8)"],
                 ["# RATIO analyses",   "4",                                 "5 (+ validity split)"],
                 ["Missing trials",      "~495 RT exclusions",               "~747 RT + 6 SK structural"],

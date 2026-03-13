@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Experiment 1 — LMM Analysis Reference Data
 // n = 10 participants
-// DV: RATIO (reproduced_duration / target_duration)
+// DV: RATIO — analyses mc/cp/mvsp (cross-exp 1a+1b, within 1a) · log_RATIO — tc (Exp 1b TC blocks)
 // Fixed time = 550 ms | Varied time = 0–1100 ms
 // ─────────────────────────────────────────────────────────────────────────────
 

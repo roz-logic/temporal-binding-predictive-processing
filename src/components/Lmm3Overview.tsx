@@ -47,7 +47,7 @@ export function Lmm3Overview() {
           <div className="grid sm:grid-cols-2 gap-x-8 gap-y-1 text-xs text-slate-300 leading-relaxed">
             <p>• Test congruency: <code className="text-amber-300">50/50 → 80/20</code></p>
             <p>• RT exclusion: Excel → <code className="text-amber-300">in code</code></p>
-            <p>• DV: raw RATIO → <code className="text-amber-300">log_RATIO throughout</code></p>
+            <p>• DV: <code className="text-amber-300">log_RATIO (IC vs TC, IP vs TC, TC blocks)</code> · <code className="text-emerald-300">RATIO (IC vs IP, validity split)</code></p>
             <p>• 5th RATIO analysis added (validity split)</p>
             <p>• <code className="text-rose-300">cond_type × is_valid</code> sig in RT ← new!</p>
             <p>• Three-way interaction sig in RT ← new!</p>
@@ -61,7 +61,7 @@ export function Lmm3Overview() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[
             { icon: "🎯", label: "Congruency split",   exp2: "50/50",               exp3: "80/20 (my_random > 0.8)" },
-            { icon: "📊", label: "RATIO DV",           exp2: "RATIO (IC/IP), log_RATIO (TC)", exp3: "log_RATIO throughout" },
+            { icon: "📊", label: "RATIO DV",           exp2: "RATIO (IC/IP), log_RATIO (TC)", exp3: "log_RATIO (mc/cp/tc) · RATIO (mvp/val)" },
             { icon: "⏱",  label: "RT exclusion",       exp2: "Done in Excel",       exp3: "Done in code (rt_excluded)" },
             { icon: "🔢", label: "RATIO analyses",     exp2: "4 analyses",          exp3: "5 analyses (+validity split)" },
             { icon: "🔑", label: "cond × is_valid RT", exp2: "Not significant",     exp3: "SIGNIFICANT ✅" },
