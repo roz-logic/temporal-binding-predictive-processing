@@ -3,7 +3,7 @@
 # =============================================================================
 # Author      : Oz
 # Project     : MA Thesis — Temporal Binding & Predictive Mechanisms
-# Department : Cognitive Science
+# Department  : Cognitive Science
 # Description : Linear Mixed Model (LMM) analyses of the RATIO measure
 #               for Experiment 2 (n = 41; 1 excluded from 42 for catch accuracy).
 #               Four analyses:
@@ -34,6 +34,35 @@
 # References:
 #   Barr et al. (2013) — keep maximal random effects
 #   Brehm & Alday (2022) — sum coding rationale
+#
+# =============================================================================
+# CONDITION NAMING CONVENTION (raw CSV)
+# =============================================================================
+# Condition names in the data follow the structure:  [Number]-[Prefix]-[XY]
+#
+# Prefix:
+#   Motor      = Identity Control (IC)
+#                Voluntary keypress triggers outcome; learned action-outcome mapping.
+#   Control    = Temporal Control (TC)
+#                Voluntary keypress triggers outcome; NO fixed identity mapping.
+#   Prediction = Identity Prediction (IP)
+#                Passive condition; tone plays automatically with learned tone-outcome mapping.
+#
+# Suffix (two letters, XY):
+#   X = Acquisition phase timing  →  F = Fixed IEI  |  R = Random IEI
+#   Y = Test phase timing         →  F = Fixed IEI  |  R = Random IEI
+#
+# Full condition key:
+#   0-Control-RR   → TC | Acq: Random | Test: Random
+#   1-Motor-FF     → IC | Acq: Fixed  | Test: Fixed
+#   2-Control-FR   → TC | Acq: Fixed  | Test: Random
+#   3-Prediction-FF → IP | Acq: Fixed  | Test: Fixed
+#   4-Motor-RF     → IC | Acq: Random | Test: Fixed
+#   5-Control-RF   → TC | Acq: Random | Test: Fixed
+#   6-Prediction-RF → IP | Acq: Random | Test: Fixed
+#   7-Control- FF  → TC | Acq: Fixed  | Test: Fixed  (note: space before FF is a raw data artefact)
+#
+# Data file to use: rename Exp2_data(42-1).csv → exp2_data_n41.csv in repo
 # =============================================================================
 
 # =============================================================================
@@ -69,11 +98,11 @@ s_to_ms <- function(x) x * 1000
 
 dat_clean <- dat_raw %>%
   mutate(across(
-    c(wait_duration_before_circle, space_pressed_duration, DIFF),
+    c(wait_duration_before_circle, space_pressed_duration, DIFFERENCE),
     as.numeric
   )) %>%
   mutate(across(
-    c(wait_duration_before_circle, space_pressed_duration, DIFF),
+    c(wait_duration_before_circle, space_pressed_duration, DIFFERENCE),
     s_to_ms
   ))
 
@@ -86,18 +115,18 @@ dat_clean <- dat_raw %>%
 dat_exp2 <- dat_clean %>%
   mutate(
     cond.type = case_when(
-      condition %in% c("IC-FF", "IC-RF") ~ "IC",
-      condition %in% c("IP-FF", "IP-RF") ~ "IP",
-      condition %in% c("TC-RR", "TC-FR", "TC-RF", "TC-FF") ~ "TC"
+      condition %in% c("1-Motor-FF", "4-Motor-RF")                                     ~ "IC",
+      condition %in% c("3-Prediction-FF", "6-Prediction-RF")                           ~ "IP",
+      condition %in% c("0-Control-RR", "2-Control-FR", "5-Control-RF", "7-Control- FF") ~ "TC"
     ),
     acq.time = case_when(
-      condition %in% c("IC-FF", "IP-FF", "TC-FF", "TC-FR") ~ "fixed",
-      condition %in% c("IC-RF", "IP-RF", "TC-RR", "TC-RF") ~ "random"
+      condition %in% c("1-Motor-FF", "3-Prediction-FF", "7-Control- FF", "2-Control-FR") ~ "fixed",
+      condition %in% c("4-Motor-RF", "6-Prediction-RF", "0-Control-RR", "5-Control-RF")  ~ "random"
     ),
     test.time = case_when(
-      condition %in% c("TC-FF", "TC-RF", "IC-FF", "IC-RF",
-                       "IP-FF", "IP-RF") ~ "fixed",
-      condition %in% c("TC-RR", "TC-FR") ~ "random"
+      condition %in% c("1-Motor-FF", "4-Motor-RF", "3-Prediction-FF",
+                       "6-Prediction-RF", "5-Control-RF", "7-Control- FF") ~ "fixed",
+      condition %in% c("0-Control-RR", "2-Control-FR")                    ~ "random"
     )
   ) %>%
   mutate_at(
@@ -125,9 +154,19 @@ print(contrasts(dat_exp2$acq.time))
 # SECTION 3: Condition Subsets
 # =============================================================================
 
-dat_mc   <- dat_exp2 %>% filter(condition %in% c("IC-FF", "IC-RF", "TC-RF", "TC-FF"))
-dat_cp   <- dat_exp2 %>% filter(condition %in% c("IP-FF", "IP-RF", "TC-RF", "TC-FF"))
-dat_mvsp <- dat_exp2 %>% filter(condition %in% c("IC-FF", "IC-RF", "IP-FF", "IP-RF"))
+# MC  : Identity Control vs Temporal Control (fixed test phase only)
+dat_mc   <- dat_exp2 %>%
+  filter(condition %in% c("1-Motor-FF", "4-Motor-RF", "5-Control-RF", "7-Control- FF"))
+
+# CP  : Identity Prediction vs Temporal Control (fixed test phase only)
+dat_cp   <- dat_exp2 %>%
+  filter(condition %in% c("3-Prediction-FF", "6-Prediction-RF", "5-Control-RF", "7-Control- FF"))
+
+# mvsp: Identity Control vs Identity Prediction (all, to test validity effect)
+dat_mvsp <- dat_exp2 %>%
+  filter(condition %in% c("1-Motor-FF", "4-Motor-RF", "3-Prediction-FF", "6-Prediction-RF"))
+
+# TC  : All four Temporal Control blocks (both fixed and random test)
 dat_tc   <- dat_exp2 %>% filter(cond.type == "TC")
 
 # =============================================================================
