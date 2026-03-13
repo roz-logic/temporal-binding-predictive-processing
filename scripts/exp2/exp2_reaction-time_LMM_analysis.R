@@ -22,6 +22,35 @@
 #   - Type III LRT via afex::mixed()
 #   - Sum contrast coding throughout
 #   - Outlier trimming: ±2.5 SD on winning model residuals
+#
+# =============================================================================
+# CONDITION NAMING CONVENTION (raw CSV)
+# =============================================================================
+# Condition names in the data follow the structure:  [Number]-[Prefix]-[XY]
+#
+# Prefix:
+#   Motor      = Identity Control (IC)
+#                Voluntary keypress triggers outcome; learned action-outcome mapping.
+#   Control    = Temporal Control (TC)
+#                Voluntary keypress triggers outcome; NO fixed identity mapping.
+#   Prediction = Identity Prediction (IP)
+#                Passive condition; tone plays automatically with learned tone-outcome mapping.
+#
+# Suffix (two letters, XY):
+#   X = Acquisition phase timing  →  F = Fixed IEI  |  R = Random IEI
+#   Y = Test phase timing         →  F = Fixed IEI  |  R = Random IEI
+#
+# Full condition key:
+#   0-Control-RR    → TC | Acq: Random | Test: Random
+#   1-Motor-FF      → IC | Acq: Fixed  | Test: Fixed
+#   2-Control-FR    → TC | Acq: Fixed  | Test: Random
+#   3-Prediction-FF → IP | Acq: Fixed  | Test: Fixed
+#   4-Motor-RF      → IC | Acq: Random | Test: Fixed
+#   5-Control-RF    → TC | Acq: Random | Test: Fixed
+#   6-Prediction-RF → IP | Acq: Random | Test: Fixed
+#   7-Control- FF   → TC | Acq: Fixed  | Test: Fixed  (note: space before FF is a raw data artefact)
+#
+# Data file to use: rename Exp2_data(42-1).csv → exp2_data_n41.csv in repo
 # =============================================================================
 
 # =============================================================================
@@ -54,13 +83,13 @@ dat_raw <- as_tibble(dat_raw)
 dat_exp2 <- dat_raw %>%
   mutate(
     cond.type = case_when(
-      condition %in% c("IC-FF", "IC-RF") ~ "IC",
-      condition %in% c("IP-FF", "IP-RF") ~ "IP",
-      condition %in% c("TC-RR", "TC-FR", "TC-RF", "TC-FF") ~ "TC"
+      condition %in% c("1-Motor-FF", "4-Motor-RF")                                     ~ "IC",
+      condition %in% c("3-Prediction-FF", "6-Prediction-RF")                           ~ "IP",
+      condition %in% c("0-Control-RR", "2-Control-FR", "5-Control-RF", "7-Control- FF") ~ "TC"
     ),
     acq.time = case_when(
-      condition %in% c("IC-FF", "IP-FF", "TC-FF", "TC-FR") ~ "fixed",
-      condition %in% c("IC-RF", "IP-RF", "TC-RR", "TC-RF") ~ "random"
+      condition %in% c("1-Motor-FF", "3-Prediction-FF", "7-Control- FF", "2-Control-FR") ~ "fixed",
+      condition %in% c("4-Motor-RF", "6-Prediction-RF", "0-Control-RR", "5-Control-RF")  ~ "random"
     )
   ) %>%
   mutate_at(
@@ -176,7 +205,7 @@ rt_afex
 # Assumption checks
 qqnorm(resid(rt_full)); qqline(resid(rt_full))
 plot(fitted(rt_full), resid(rt_full),
-     xlab = "Fitted", ylab = "Residuals", main = "RT Exp2: Fitted vs Residuals")
+     xlab = "Fitted", ylab = "Residuals", main = "RT Exp 2: Fitted vs Residuals")
 
 # =============================================================================
 # SECTION 5: Visualisation
