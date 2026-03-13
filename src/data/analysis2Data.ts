@@ -615,21 +615,21 @@ afex_mvp2
   // ── RATIO Analysis 4: Temporal Control ───────────────────────────────────
   {
     id: "tc2",
-    title: "Temporal Control — RATIO / log(RATIO)",
+    title: "Temporal Control — log(RATIO)",
     subtitle: "Acquisition Timing × Test Timing · All four TC blocks",
     color: "amber",
     badge: "RATIO Analysis 4",
     description:
       "Examines whether acquisition timing (fixed/random) and test timing (fixed/random) affect temporal reproduction in TC blocks. Raw RATIO residuals are non-normal — log_RATIO is used for the backward selection and afex confirmation. Key result: only test_time is significant; interaction NOT significant in Exp 2.",
     design: "2 × 2 (Acquisition Timing × Test Timing)",
-    dv: "RATIO (forward) / log_RATIO (backward + afex)",
+    dv: "log_RATIO = log(space_pressed_duration / wait_duration_before_circle)",
     predictors: ["acq_time (fixed vs. random)", "test_time (fixed vs. random)"],
     randomStructure: "(1 + acq_time + test_time | participant)",
     contrastCoding: "Sum contrasts",
     naAction: "na.action = na.exclude",
     steps: [
       {
-        heading: "Fixed-effects forward selection (RATIO)",
+        heading: "Fixed-effects forward selection (log_RATIO)",
         items: [
           { label: "add test_time",              result: "✅ Significant" },
           { label: "add acq_time",               result: "❌ Not significant" },
@@ -644,25 +644,25 @@ afex_mvp2
         ],
       },
     ],
-    winningModel: "RATIO ~ test_time + (1 + acq_time + test_time | participant)",
+    winningModel: "log_RATIO ~ test_time + (1 + acq_time + test_time | participant)",
     snippets: [
       {
-        label: "Forward selection (RATIO)",
-        code: `# ── Forward selection on RATIO ───────────────────────────────────────────────
-mb0 <- lmer(RATIO ~ 1 +
+        "Forward selection (log_RATIO)",
+        code: `# ── Forward selection on log_RATIO ───────────────────────────────────────────────
+mb0 <- lmer(log_RATIO ~ 1 +
               (1 + acq_time + test_time | participant),
             data = TC, REML = FALSE, na.action = na.exclude)
 
-mb1 <- lmer(RATIO ~ test_time +
+mb1 <- lmer(log_RATIO ~ test_time +
               (1 + acq_time + test_time | participant),
             data = TC, REML = FALSE, na.action = na.exclude)
 
-mb2 <- lmer(RATIO ~ acq_time + test_time +
+mb2 <- lmer(log_RATIO ~ acq_time + test_time +
               (1 + acq_time + test_time | participant),
             data = TC, REML = FALSE, na.action = na.exclude,
             control = lmerControl(optimizer = "bobyqa"))
 
-mb3 <- lmer(RATIO ~ acq_time * test_time +
+mb3 <- lmer(log_RATIO ~ acq_time * test_time +
               (1 + acq_time + test_time | participant),
             data = TC, REML = FALSE, na.action = na.exclude)
 
@@ -671,11 +671,11 @@ anova(mb1, mb2)   # acq_time  NOT sig ❌
 anova(mb2, mb3)   # interaction NOT sig ❌  (differs from Exp 1)
 
 # ── Random-effects selection ──────────────────────────────────────────────────
-rb1 <- lmer(RATIO ~ test_time + (1 | participant),
+rb1 <- lmer(log_RATIO ~ test_time + (1 | participant),
             data = TC, REML = TRUE, na.action = na.exclude)
-rb2 <- lmer(RATIO ~ test_time + (1 + acq_time | participant),
+rb2 <- lmer(log_RATIO ~ test_time + (1 + acq_time | participant),
             data = TC, REML = TRUE, na.action = na.exclude)
-rb3 <- lmer(RATIO ~ test_time + (1 + acq_time + test_time | participant),
+rb3 <- lmer(log_RATIO ~ test_time + (1 + acq_time + test_time | participant),
             data = TC, REML = TRUE, na.action = na.exclude)
 
 anova(rb1, rb2, refit = FALSE)   # acq_time  slope needed ✅
