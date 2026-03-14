@@ -7,10 +7,10 @@
 
 ## What this is
 
-An interactive reference tool for the analyses, experimental design scripts, and statistical models used across all three experiments of the MSc thesis:
+An interactive reference tool for the analyses, experimental design scripts, and statistical models used across all three experiments of the MA thesis:
 
-**"Temporal Binding and Predictive Processing: Dissociating Temporal Control from Temporal Prediction"**  
-MA Thesis · Cognitive Science · Boğaziçi University
+**"Sensorimotor Mechanisms of Time Perception: Investigating Temporal Binding Effect Through Predictive Mechanisms"**  
+MA Thesis · Cognitive Science · 
 
 ---
 
