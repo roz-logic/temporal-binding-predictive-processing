@@ -20,7 +20,7 @@ results: binding was NOT observed in IP blocks, confirming the role of
 temporal control (action) in the binding effect.
 
   1. PRACTICE     (10 trials) — Familiarise with interval reproduction.
-     Random tone, random colour. Tone plays after ~1.3s fixation.
+     Random tone, random colour. Tone plays after ~2.0s fixation.
   2. ACQUISITION  (50 trials) — Learn tone-outcome mapping (100% valid).
      Low tone (500 Hz) → Red, High tone (1000 Hz) → Green.
      Observe only; no reproduction.
@@ -33,7 +33,7 @@ KEY DIFFERENCE FROM IC/TC
 --------------------------
   - No keypress required (passive observation)
   - Tones (500/1000 Hz) replace keypresses as first event
-  - Trial starts automatically after fixation (~1.3s delay to tone)
+  - Trial starts automatically after fixation (~2.0s delay to tone)
   - Tone-colour mapping: Low (500 Hz) → Red, High (1000 Hz) → Green
 
 BLOCK CONFIGURATIONS
@@ -70,7 +70,7 @@ THESIS PARAMETERS (Experiment 1)
   Outcome stimulus duration   : 200 ms
   Tone frequencies            : 500 Hz (low), 1000 Hz (high)
   Tone duration               : 200 ms
-  Tone onset delay            : 1300 ms after trial start
+  Tone onset delay            : 2000 ms after trial start
   Acquisition trials          : 50  (100% congruent tone-colour mapping)
   Test trials                 : 50  (congruency randomised)
   Practice trials             : 10
@@ -106,7 +106,7 @@ from psychopy.hardware import keyboard
 
 FIXED_IEI_S = 0.550                 # Fixed inter-event interval (tone offset → circle onset)
 OUTCOME_DISPLAY_DURATION_S = 0.200   # Circle visible duration (200 ms)
-TONE_ONSET_DELAY_S = 1.3            # Delay from trial start to tone onset
+TONE_ONSET_DELAY_S = 2.0            # Delay from trial start to tone onset
 TONE_DURATION_S = 0.2               # Tone plays for 200 ms
 
 # ==================== SOUND SETUP ====================
