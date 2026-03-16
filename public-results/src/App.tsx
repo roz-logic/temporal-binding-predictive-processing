@@ -8,7 +8,7 @@ import References from "./components/References";
 
 export function App() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-[#F5F0E6] text-slate-900">
       <Navbar />
       <Hero />
       <OverviewCards />
