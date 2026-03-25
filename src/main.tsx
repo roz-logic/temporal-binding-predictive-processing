@@ -1,17 +1,17 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { App } from "./App";
-import { ResultsApp } from "./ResultsApp";
-import "./index.css";
+// src/main.tsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import App from './App.tsx'  // Your main app
+import ResultsApp from './results/App.tsx'  // Create this or use public-results
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter basename="/temporal-binding-predictive-processing">
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/results/*" element={<ResultsApp />} />
+        <Route path="/results" element={<ResultsApp />} />
       </Routes>
     </BrowserRouter>
-  </StrictMode>
-);
+  </React.StrictMode>,
+)
