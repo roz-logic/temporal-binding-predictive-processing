@@ -2,7 +2,6 @@
 ### Interactive Analysis Reference — MA Thesis
 
 > **Live app:** https://roz-logic.github.io/temporal-binding-predictive-processing/
-
 ---
 
 ## What this is
