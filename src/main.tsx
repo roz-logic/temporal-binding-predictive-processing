@@ -1,10 +1,17 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { App } from "./App";
+import { ResultsApp } from "./ResultsApp";
+import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <BrowserRouter basename="/temporal-binding-predictive-processing">
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/results/*" element={<ResultsApp />} />
+      </Routes>
+    </BrowserRouter>
   </StrictMode>
 );
