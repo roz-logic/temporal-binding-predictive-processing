@@ -264,9 +264,7 @@ Desktop.ini
 marimo/_static/
 marimo/_lsp/
 __marimo__/
-d i s t / 
- 
- n o d e _ m o d u l e s / 
+dist/ 
 node_modules/
 public-results/
  
