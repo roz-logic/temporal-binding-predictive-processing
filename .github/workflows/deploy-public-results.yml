@@ -3,7 +3,7 @@ name: Deploy Public Results to GitHub Pages
 on:
   push:
     branches:
-      - main                    # ← CHANGED: Triggers on main
+      - main
       - public-results
 
 permissions:
@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: public-results          # ← ADDED THESE 3 LINES
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -36,9 +38,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public-results/dist      # ← Results app dist
+          path: ./public-results/dist
 
       - name: Deploy to /public-results
         id: deployment
         uses: actions/deploy-pages@v4
-
