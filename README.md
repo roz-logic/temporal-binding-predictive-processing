@@ -1,8 +1,12 @@
 # Temporal Binding & Predictive Processing
 ### Interactive Analysis Reference — MA Thesis
 
-> **Live app:** https://roz-logic.github.io/temporal-binding-predictive-processing/
----
+## Live Apps
+
+| App | Description |
+|---|---|
+| [🔬 Analysis Reference](https://roz-logic.github.io/temporal-binding-predictive-processing/) | R code, PsychoPy scripts, LMM models — thesis working reference |
+| [📊 Results Dashboard](https://roz-logic.github.io/public-results/) | Interactive charts of experimental findings |
 
 ## What this is
 
