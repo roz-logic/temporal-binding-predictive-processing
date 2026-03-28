@@ -10,7 +10,7 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter basename="/temporal-binding-predictive-processing">
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/results" element={<ResultsApp />} />
+        <Route path="results" element={<ResultsApp />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
