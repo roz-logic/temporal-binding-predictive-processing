@@ -35,6 +35,9 @@ jobs:
         env:
           DEPLOY_TARGET: ghpages
 
+      - name: Fix routing
+        run: cp dist/index.html dist/404.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
