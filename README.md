@@ -6,7 +6,7 @@
 | App | Description |
 |---|---|
 | [🔬 Analysis Reference](https://roz-logic.github.io/temporal-binding-predictive-processing/) | R code, PsychoPy scripts, LMM models |
-| [📊 Results Dashboard](https://roz-logic.github.io/temporal-binding-predictive-processing/#/results) | Interactive charts of experimental findings |
+| [📊 Results Dashboard](https://roz-logic.github.io/temporal-binding-predictive-processing/results/) | Interactive charts of experimental findings |
 ```
 
 ## What this is
